@@ -9,7 +9,7 @@ import React, {
 import { ethers } from 'ethers'
 import Address from 'src/models/Address'
 import { goerli as goerliNetworks, mainnet as mainnetNetworks } from '@hop-protocol/core/networks'
-import { blocknativeDappid, reactAppNetwork } from 'src/config'
+import { blocknativeDappid, isGoerli } from 'src/config'
 import { networkSlugToId } from 'src/utils'
 import { l1Network } from 'src/config/networks'
 import logger from 'src/logger'
@@ -40,7 +40,7 @@ export type Props = {
 class NetworkSwitchError extends Error {}
 
 function getOnboardChains(): any {
-  if (reactAppNetwork === 'goerli') {
+  if (isGoerli) {
     return [
       {
         id: chainIdToHex(goerliChains.ethereum.networkId),
