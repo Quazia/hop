@@ -8,9 +8,8 @@ import React, {
 } from 'react'
 import { ethers } from 'ethers'
 import Address from 'src/models/Address'
-import { goerli as goerliNetworks, mainnet as mainnetNetworks } from '@hop-protocol/core/networks'
-import { networkSlugToId } from 'src/utils'
-import { blocknativeDappid, reactAppNetwork } from 'src/config'
+import { networkIdToSlug, networkSlugToId, getRpcUrl, getBaseExplorerUrl, getRpcUrlOrThrow } from 'src/utils'
+import { blocknativeDappid, isGoerli } from 'src/config'
 import { l1Network } from 'src/config/networks'
 import logger from 'src/logger'
 import { chainIdToHex } from 'src/utils/chainIdToHex'
@@ -39,52 +38,40 @@ export type Props = {
 
 class NetworkSwitchError extends Error {}
 
-function getOnboardChains(): any {
-  if (reactAppNetwork === 'goerli') {
-    return [
-      {
-        id: chainIdToHex(goerliChains.ethereum.networkId),
-        token: 'ETH',
-        label: 'Ethereum Goerli',
-        rpcUrl: goerliChains.ethereum.publicRpcUrl
-      },
-      {
-        id: chainIdToHex(goerliChains.arbitrum.networkId),
-        token: 'ETH',
-        label: 'Arbitrum Goerli',
-        rpcUrl: goerliChains.arbitrum.publicRpcUrl
-      },
-      {
-        id: chainIdToHex(goerliChains.optimism.networkId),
-        token: 'ETH',
-        label: 'Optimism Goerli',
-        rpcUrl: goerliChains.optimism.publicRpcUrl
-      },
-      {
-        id: chainIdToHex(goerliChains.polygon.networkId),
-        token: 'MATIC',
-        label: 'Polygon Mumbai',
-        rpcUrl: goerliChains.polygon.publicRpcUrl
-      },
-      {
-        id: chainIdToHex(goerliChains.zksync.networkId),
-        token: 'ETH',
-        label: 'zkSync Goerli',
-        rpcUrl: goerliChains.zksync.publicRpcUrl
-      },
-      {
-        id: chainIdToHex(goerliChains.linea.networkId),
-        token: 'ETH',
-        label: 'Linea Goerli',
-        rpcUrl: 'https://rpc.goerli.linea.build' // NOTE: this rpc url has write access but it's more rate limitted
-      },
-      {
-        id: chainIdToHex(goerliChains.scrollzk.networkId),
-        token: 'ETH',
-        label: 'Scroll zkEVM',
-        rpcUrl: goerliChains.scrollzk.publicRpcUrl
-      }
-    ]
+// TODO: modularize
+const networkNames: any = {
+  1: 'Mainnet',
+  3: 'Ropsten',
+  4: 'Rinkeby',
+  5: 'Goerli',
+  42: 'Kovan',
+  42161: 'Arbitrum',
+  421613: 'Arbitrum (Goerli)',
+  421611: 'Arbitrum (Rinkeby)',
+  42170: 'Nova',
+  10: 'Optimism',
+  69: 'Optimism (Kovan)',
+  420: 'Optimism (Goerli)',
+  77: 'Gnosis (Testnet)',
+  100: 'Gnosis',
+  80001: 'Polygon (Mumbai)',
+  137: 'Polygon',
+  59140: 'Linea (Goerli)',
+  84531: 'Base (Goerli)',
+  534354: 'Scroll zkEVM (Goerli)'
+}
+
+const getWalletConnectRpcUrls = (): Record<string, string> => {
+  if (isGoerli) {
+    return {
+      5: getRpcUrl(ChainSlug.Ethereum),
+      421613: getRpcUrl(ChainSlug.Arbitrum),
+      420: getRpcUrl(ChainSlug.Optimism),
+      80001: getRpcUrl(ChainSlug.Polygon),
+      59140: getRpcUrl(ChainSlug.Linea),
+      534354: getRpcUrl(ChainSlug.ScrollZk),
+      84531: getRpcUrl(ChainSlug.Base)
+    }
   } else {
     return [
       {
