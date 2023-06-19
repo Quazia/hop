@@ -18,7 +18,8 @@ export enum Chain {
   ZkSync = 'zksync',
   Linea = 'linea',
   ScrollZk = 'scrollzk',
-  Base = 'base'
+  Base = 'base',
+  PolygonZk = 'polygonzk',
 }
 
 // TODO: read from core
@@ -117,7 +118,8 @@ export enum GasCostTransactionType {
 
 export const RelayableChains: string[] = [
   Chain.Arbitrum,
-  Chain.Nova
+  Chain.Nova,
+  Chain.PolygonZk
 ]
 
 export const MaxDeadline: number = 9999999999
@@ -147,5 +149,6 @@ export const FinalityTagForChain: Record<string, string> = {
   [Chain.Arbitrum]: FinalityTag.Safe,
   [Chain.Gnosis]: FinalityTag.Finalized,
   [Chain.Base]: FinalityTag.Finalized,
-  [Chain.Nova]: FinalityTag.Safe
+  [Chain.Nova]: FinalityTag.Safe,
+  [Chain.PolygonZk]: FinalityTag.Safe
 }
