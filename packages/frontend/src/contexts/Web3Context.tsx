@@ -39,7 +39,6 @@ export type Props = {
 
 class NetworkSwitchError extends Error {}
 
-<<<<<<< HEAD
 function getOnboardChains(): any {
   if (isGoerli) {
     return [
