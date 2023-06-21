@@ -64,7 +64,8 @@ export const SettlementGasLimitPerTx: Record<string, number> = {
   zksync: 10000, // TODO
   linea: 10000, // TODO
   scrollzk: 10000, // TODO
-  base: 10000 // TODO
+  base: 10000, // TODO
+  polygonzk: 10000 // TODO
 }
 
 export const DefaultBatchBlocks = 10000
@@ -135,7 +136,8 @@ export const MaxReorgCheckBackoffIndex = 2 // 120 + 240 + 480 = 840 seconds, 14 
 const ValidatorExitBufferMs = OneHourMs * 10
 export const OruExitTimeMs: Record<string, number> = {
   [Chain.Optimism]: OneHourMs,
-  [Chain.Arbitrum]: OneWeekMs + ValidatorExitBufferMs
+  [Chain.Arbitrum]: OneWeekMs + ValidatorExitBufferMs,
+  [Chain.PolygonZk]: OneHourMs
 }
 
 export const FinalityTag: Record<string, string> = {
