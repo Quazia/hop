@@ -68,7 +68,7 @@ export function useEstimateTxCost(selectedNetwork?: Network) {
             network.slug,
             destNetwork.slug
           )
-          const l1FeeInWei = await bridge.estimateOptimismL1FeeFromData(estimatedGasLimit, data, to, network.slug)
+          const l1FeeInWei = await bridge.estimateOptimismL1FeeFromData(estimatedGasLimit, data, to /*, network.slug*/)
           gasCost = gasCost.add(l1FeeInWei)
         }
         return gasCost
