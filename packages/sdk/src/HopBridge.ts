@@ -1142,7 +1142,8 @@ class HopBridge extends Base {
       destinationChain.equals(Chain.Ethereum) ||
       destinationChain.equals(Chain.Optimism) ||
       destinationChain.equals(Chain.Arbitrum) ||
-      destinationChain.equals(Chain.Nova)
+      destinationChain.equals(Chain.Nova) ||
+      destinationChain.equals(Chain.ScrollZk)
     ) {
       const multiplier = parseEther(this.getDestinationFeeGasPriceMultiplier().toString())
       if (multiplier.gt(0)) {
@@ -1240,6 +1241,8 @@ class HopBridge extends Base {
         bondTransferGasLimit = BondTransferGasLimit.Arbitrum
       } else if (destinationChain.equals(Chain.Nova)) {
         bondTransferGasLimit = BondTransferGasLimit.Nova
+      } else if (destinationChain.equals(Chain.ScrollZk)) {
+        bondTransferGasLimit = BondTransferGasLimit.ScrollZk
       }
       return BigNumber.from(bondTransferGasLimit)
     }

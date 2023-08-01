@@ -18,3 +18,7 @@ yarn-error.log*
 hop.sh
 1
 yarn.lock
+
+# Sublime Text
+scroll-deploy.sublime-workspace
+scroll-deploy.sublime-project

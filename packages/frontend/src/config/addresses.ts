@@ -37,6 +37,7 @@ if (enabledTokens) {
 // TODO: mv to src/config/networks
 let enabledChains: string | string[] | undefined = process.env.REACT_APP_ENABLED_CHAINS
 if (enabledChains) {
+  console.log("enabled chains:", enabledChains)
   enabledChains = enabledChains.split(',').map(x => x.trim())
   const filteredNetworks: { [key: string]: any } = {}
   for (const enabledChain of enabledChains) {
@@ -48,7 +49,7 @@ if (enabledChains) {
 }
 
 if (!enabledChains) {
-  enabledChains = ['ethereum', 'polygon', 'gnosis']
+  enabledChains = ['ethereum', 'polygon', 'gnosis', 'scrollzk']
 }
 
 if (process.env.NODE_ENV !== 'test') {

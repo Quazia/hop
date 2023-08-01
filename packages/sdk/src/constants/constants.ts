@@ -114,6 +114,7 @@ export enum BondTransferGasLimit {
   Optimism = '350000',
   Arbitrum = '2500000',
   Nova = '2500000',
+  ScrollZk = '2500000' // TODO
 }
 
 export const SettlementGasLimitPerTx: Record<string, number> = {

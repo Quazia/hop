@@ -255,6 +255,24 @@ class CanonicalBridge extends Base {
         recipient,
         amount
       )
+    } else if ((chain as Chain).equals(Chain.ScrollZk)) {
+      const bridgeAddress = this.getL1PosRootChainManagerAddress(
+        this.tokenSymbol,
+        chain
+      )
+      if (!bridgeAddress) {
+        throw new Error(
+          `token "${this.tokenSymbol}" on chain "${chain.slug}" is unsupported`
+        )
+      }
+      const bridge = await this.getContract(
+        L1_PolygonPosRootChainManager__factory,
+        bridgeAddress,
+        provider
+      )
+      const coder = ethers.utils.defaultAbiCoder
+      const payload = coder.encode(['uint256'], [amount])
+      return bridge.depositFor(recipient, tokenAddress, payload)
     } else if ((chain as Chain).equals(Chain.Polygon)) {
       const bridgeAddress = this.getL1PosRootChainManagerAddress(
         this.tokenSymbol,
@@ -420,6 +438,18 @@ class CanonicalBridge extends Base {
       }
       const bridge = ArbERC20__factory.connect(bridgeAddress, provider)
       return bridge.withdraw(recipient, amount)
+    } else if ((chain as Chain).equals(Chain.ScrollZk)) {
+      const tokenAddress = this.getL2CanonicalTokenAddress(
+        this.tokenSymbol,
+        chain
+      )
+      if (!tokenAddress) {
+        throw new Error(
+          `token "${this.tokenSymbol}" on chain "${chain.slug}" is unsupported`
+        )
+      }
+      const token = L2_PolygonChildERC20__factory.connect(tokenAddress, provider)
+      return token.withdraw(amount)
     } else if ((chain as Chain).equals(Chain.Polygon)) {
       const tokenAddress = this.getL2CanonicalTokenAddress(
         this.tokenSymbol,

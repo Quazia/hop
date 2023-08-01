@@ -71,10 +71,10 @@ export const networks: Networks = {
     name: chains.scrollzk.name,
     image: chains.scrollzk.image,
     networkId: 534354,
-    publicRpcUrl: 'https://prealpha-rpc.scroll.io/l2',
+    publicRpcUrl: 'https://alpha-rpc.scroll.io/l2',
     fallbackPublicRpcUrls: [],
-    explorerUrls: ['https://l2scan.scroll.io'],
-    nativeBridgeUrl: 'https://scroll.io/prealpha/bridge',
+    explorerUrls: ['https://blockscout.scroll.io/'],
+    nativeBridgeUrl: 'https://scroll.io/bridge',
     waitConfirmations: 64,
     hasFinalizationBlockTag: true
   },
