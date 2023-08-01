@@ -70,6 +70,7 @@ export const etherscanApiKeys: Record<string, string> = {
   gnosis: process.env.ETHERSCAN_GNOSIS_API_KEY ?? '',
   nova: process.env.ETHERSCAN_NOVA_API_KEY ?? '',
   scrollzk: process.env.ETHERSCAN_SCROLLZK_API_KEY ?? ''
+  base: process.env.ETHERSCAN_BASE_API_KEY ?? ''
 }
 
 export const etherscanApiUrls: Record<string, string> = {
@@ -80,6 +81,7 @@ export const etherscanApiUrls: Record<string, string> = {
   gnosis: 'https://api.gnosisscan.io',
   nova: 'https://api-nova.arbiscan.io',
   scrollzk: 'https://blockscout.scroll.io/'
+  base: 'https://api.basescan.org'
 }
 
 export const defaultRelayerFeeEth: string = '0.01'

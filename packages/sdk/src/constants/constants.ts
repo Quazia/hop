@@ -15,7 +15,8 @@ export enum ChainId {
   Polygon = 137,
   Gnosis = 100,
   Nova = 42170,
-  ZkSync = 324
+  ZkSync = 324,
+  Base= 8453
 }
 
 // TODO: read from core package
@@ -115,6 +116,7 @@ export enum BondTransferGasLimit {
   Arbitrum = '2500000',
   Nova = '2500000',
   ScrollZk = '2500000' // TODO
+  Base = '350000',
 }
 
 export const SettlementGasLimitPerTx: Record<string, number> = {
@@ -124,10 +126,10 @@ export const SettlementGasLimitPerTx: Record<string, number> = {
   optimism: 8545,
   arbitrum: 19843,
   nova: 19843,
+  base: 8545,
   zksync: 10000, // TODO
   linea: 10000, // TODO
   scrollzk: 10000, // TODO
-  base: 10000, // TODO
   polygonzk: 10000 // TODO
 }
 

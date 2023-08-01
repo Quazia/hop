@@ -12,6 +12,7 @@ function disableNativeAssetTransfers(sourceChain: string, tokenSymbol: string) {
     (sourceChain === ChainSlug.Nova && tokenSymbol === 'ETH') ||
     (sourceChain === ChainSlug.Ethereum && tokenSymbol === 'ETH') ||
     (sourceChain === ChainSlug.ScrollZk && tokenSymbol === 'ETH')
+    (sourceChain === ChainSlug.Base && tokenSymbol === 'ETH') ||
   ) {
     return true
   }
