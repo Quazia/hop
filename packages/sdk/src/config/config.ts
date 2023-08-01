@@ -80,7 +80,7 @@ export const etherscanApiUrls: Record<string, string> = {
   arbitrum: 'https://api.arbiscan.io',
   gnosis: 'https://api.gnosisscan.io',
   nova: 'https://api-nova.arbiscan.io',
-  scrollzk: 'https://blockscout.scroll.io/'
+  scrollzk: 'https://blockscout.scroll.io/',
   base: 'https://api.basescan.org'
 }
 
