@@ -69,7 +69,7 @@ export const etherscanApiKeys: Record<string, string> = {
   arbitrum: process.env.ETHERSCAN_ARBITRUM_API_KEY ?? '',
   gnosis: process.env.ETHERSCAN_GNOSIS_API_KEY ?? '',
   nova: process.env.ETHERSCAN_NOVA_API_KEY ?? '',
-  scrollzk: process.env.ETHERSCAN_SCROLLZK_API_KEY ?? ''
+  scrollzk: process.env.ETHERSCAN_SCROLLZK_API_KEY ?? '',
   base: process.env.ETHERSCAN_BASE_API_KEY ?? ''
 }
 
