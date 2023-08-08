@@ -4,6 +4,14 @@
 
 ## Development
 
+Install dependencies
+
+```sh
+npm install
+```
+
+Build
+
 ```sh
 npm run build
 ```
@@ -12,14 +20,20 @@ npm run build
 
 ### Metabase
 
-Run metabase
+Run metabase with a sqlite3 local database.
 
 ```sh
 cd ../metabase
 docker-compose up
 ```
 
+Visit http://localhost:3000
+
+Set the sqlite3 db path to `/sqlite3.db`
+
 ### Workers
+
+Some examples on running workers.
 
 Run all bonder stats workers
 
@@ -39,16 +53,28 @@ Run yields worker
 ts-node src/index.ts --yields
 ```
 
-Run volume worker
+Run prices worker
 
 ```sh
-ts-node src/index.ts --volume --days=30
+ts-node src/index.ts --prices --pricesPollIntervalSeconds=10
 ```
 
-Run tvl worker
+Run volume stats worker
 
 ```sh
-ts-node src/index.ts --tvl --days=30
+ts-node src/index.ts --volume
+```
+
+Run tvl stats worker
+
+```sh
+ts-node src/index.ts --tvl --tvlDays=30
+```
+
+Run amm stats worker
+
+```sh
+ts-node src/index.ts --amm --ammDays=2
 ```
 
 ### Metabase charts
