@@ -219,87 +219,17 @@ class OptimismBridgeWatcher extends BaseWatcher {
       throw new Error(`relayL1ToL2Message error: ${err.message}`)
     }
   }
-  async getTxHashesForFrame(
-    txHash: string
-  ): Promise<any> {
 
-    // Frame format: frame = channel_id ++ frame_number ++ frame_data_length ++ frame_data ++ is_last
-    // 16 + 2 + 4 + x + 1 = x + 23 bytes
-    // https://github.com/ethereum-optimism/optimism/blob/develop/specs/derivation.md#frame-format
-
-    let frames: Buffer[] = []
-    for (const txHash of txHashes) {
-      const tx = await this.l1Provider.getTransaction(txHash)
-
-      const calldataWithoutPrefix = tx.data.slice(2)
-      const version = calldataWithoutPrefix.slice(0, 2)
-      const channelId = calldataWithoutPrefix.slice(2, 34)
-      const frameNum = calldataWithoutPrefix.slice(34, 38)
-      const frameDataLen = calldataWithoutPrefix.slice(38, 46)
-      const lenInt = parseInt(frameDataLen, 16) * 2
-      const frameData = calldataWithoutPrefix.slice(46, 46 + lenInt)
-      const isLast = calldataWithoutPrefix.slice(46 + lenInt, 46 + lenInt + 2)
-
-      if (channelId === expectedChannelId) {
-        frames.push(Buffer.from(frameData, 'hex'))
-      }
+  async isBatchPostedOnL1(l2BlockTag: providers.BlockTag): Promise<boolean> {
+    if (typeof l2BlockTag !== 'number') {
+      throw new Error(`isBatchPostedOnL1 error: optimism chains l2BlockTag is not the blockNumber`)
     }
 
-
-    if (frames.length === 0) {
-      throw new Error('No frames found')
+    const lastPostBlockNumber = await this.bridge.getSafeBlockNumber()
+    if (l2BlockTag < lastPostBlockNumber) {
+      return false
     }
-
-    // When decompressing a channel, we limit the amount of decompressed data to MAX_RLP_BYTES_PER_CHANNEL
-    // (currently 10,000,000 bytes), in order to avoid "zip-bomb" types of attack (where a small compressed
-    // input decompresses to a humongous amount of data). If the decompressed data exceeds the limit, things
-    // proceeds as though the channel contained only the first MAX_RLP_BYTES_PER_CHANNEL decompressed bytes.
-    // The limit is set on RLP decoding, so all batches that can be decoded in MAX_RLP_BYTES_PER_CHANNEL will
-    // be accepted ven if the size of the channel is greater than MAX_RLP_BYTES_PER_CHANNEL. The exact requirement
-    // is that length(input) <= MAX_RLP_BYTES_PER_CHANNEL.
-    // https://github.com/ethereum-optimism/optimism/blob/develop/specs/derivation.md#channel-format
-
-    const maxOutputLength = 10_000_000
-    const channelCompressed: Uint8Array = Buffer.concat(frames)
-    const channelDecompressed: Uint8Array = zlib.inflateSync(channelCompressed, { maxOutputLength })
-
-    // Batch format: rlp_encode([parent_hash, epoch_number, epoch_hash, timestamp, transaction_list])
-    // https://github.com/ethereum-optimism/optimism/blob/develop/specs/derivation.md#batch-format
-
-    // NOTE: We are using ethereumjs RPL package since ethers does not allow for a stream
-    const stream = true
-    let remainingBatches: Uint8Array = channelDecompressed
-    let isDataRemaining = true
-    while (isDataRemaining) {
-      // Parse decoded data
-      const encodedTxs: string = '0x' + Buffer.from(remainingBatches).toString('hex')
-      const {
-        data: batch,
-        remainder
-      } = RLP.decode(encodedTxs, stream)
-
-      // Decode batch and parse
-      const batchHex = '0x' + Buffer.from(batch as Uint8Array).toString('hex').slice(2)
-      const decodedBatch = RLP.decode(batchHex)
-
-      const parentHash = '0x' + Buffer.from(decodedBatch[0] as Uint8Array).toString('hex')
-      const epochNumber = parseInt(Buffer.from(decodedBatch[1] as Uint8Array).toString('hex'), 16)
-      const epochHash = '0x' + Buffer.from(decodedBatch[2] as Uint8Array).toString('hex')
-      const timestamp = parseInt(Buffer.from(decodedBatch[3] as Uint8Array).toString('hex'), 16)
-      const transactionHashes = (decodedBatch[4] as Uint8Array[]).map(
-        (tx: Uint8Array) => {
-          const txData = TransactionFactory.fromSerializedData(Buffer.from(tx))
-          return '0x' + txData.hash().toString('hex')
-        }
-      )
-
-
-      // Prep next loop
-      remainingBatches = remainder
-      if (remainingBatches.length === 0){
-        isDataRemaining = false
-      }
-    }
+    return true
   }
 }
 

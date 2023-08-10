@@ -197,5 +197,10 @@ class PolygonZkBridgeWatcher extends BaseWatcher {
       unrelayableErrors
     }
   }
+
+  async isBatchPostedOnL1(l2BlockTag: providers.BlockTag): Promise<boolean> {
+    // TODO: implement
+    return false
+  }
 }
 export default PolygonZkBridgeWatcher

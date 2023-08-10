@@ -7,6 +7,7 @@ import { IL1ToL2MessageWriter, L1ToL2MessageStatus, L1TransactionReceipt, L2Tran
 import { L1_Bridge as L1BridgeContract } from '@hop-protocol/core/contracts/generated/L1_Bridge'
 import { L2_Bridge as L2BridgeContract } from '@hop-protocol/core/contracts/generated/L2_Bridge'
 import { Signer, providers } from 'ethers'
+import { Interface } from 'ethers/lib/utils'
 import { config as globalConfig } from 'src/config'
 
 type Config = {
@@ -126,6 +127,28 @@ class ArbitrumBridgeWatcher extends BaseWatcher {
     const l1ToL2Message = await this.getL1ToL2Message(l1TxHash, messageIndex, useDefaultProvider)
     const res = await l1ToL2Message.waitForStatus()
     return res.status
+  }
+
+  async isBatchPostedOnL1(l2BlockTag: providers.BlockTag): Promise<boolean> {
+    if (typeof l2BlockTag !== 'string') {
+      throw new Error(`isBatchPostedOnL1 error: arbitrum chains l2BlockTag is not the blockHash`)
+    }
+
+    const nodeInterfaceAddress = '0x00000000000000000000000000000000000000C8'
+    const abi = ['function getL1Confirmations(bytes32)']
+    const ethersInterface = new Interface(abi)
+    const data = ethersInterface.encodeFunctionData(
+      'function', [l2BlockTag]
+    )
+    const tx: any = {
+      to: nodeInterfaceAddress,
+      data
+    }
+    
+    // 1 confirmation means the transaction has been posted on L1
+    // https://github.com/OffchainLabs/nitro/blob/v2.0.14/contracts/src/node-interface/NodeInterface.sol#L69
+    const numL1Confirmations: string = await this.l2Wallet.provider!.call(tx)
+    return Number(numL1Confirmations) >= 1
   }
 }
 

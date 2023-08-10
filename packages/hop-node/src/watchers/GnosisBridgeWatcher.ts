@@ -147,6 +147,11 @@ class GnosisBridgeWatcher extends BaseWatcher {
       }
     }
   }
+
+  async isBatchPostedOnL1(l2BlockTag: providers.BlockTag): Promise<boolean> {
+    // Transactions are not batched on L1
+    return false
+  }
 }
 
 export default GnosisBridgeWatcher

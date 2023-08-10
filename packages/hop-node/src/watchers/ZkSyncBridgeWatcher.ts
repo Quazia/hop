@@ -260,6 +260,11 @@ class ZkSyncBridgeWatcher extends BaseWatcher {
     )
     return tx
   }
+
+  async isBatchPostedOnL1(l2BlockTag: providers.BlockTag): Promise<boolean> {
+    // TODO: implement
+    return false
+  }
 }
 
 export default ZkSyncBridgeWatcher
