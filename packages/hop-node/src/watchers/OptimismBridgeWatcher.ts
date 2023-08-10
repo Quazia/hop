@@ -226,7 +226,7 @@ class OptimismBridgeWatcher extends BaseWatcher {
     }
 
     const lastPostBlockNumber = await this.bridge.getSafeBlockNumber()
-    if (l2BlockTag < lastPostBlockNumber) {
+    if (l2BlockTag > lastPostBlockNumber) {
       return false
     }
     return true
