@@ -75,7 +75,7 @@ export const networks: Networks = {
   scrollzk: {
     name: chains.scrollzk.name,
     image: chains.scrollzk.image,
-    networkId: 534354,
+    networkId: 534353,
     publicRpcUrl: 'https://alpha-rpc.scroll.io/l2',
     fallbackPublicRpcUrls: [],
     explorerUrls: ['https://blockscout.scroll.io/'],

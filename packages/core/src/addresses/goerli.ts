@@ -381,15 +381,15 @@ export const addresses: Addresses = {
       },
       scrollzk: {
         l1CanonicalBridge: '0x0000000000000000000000000000000000000000',
-        l1MessengerWrapper: '0x5f79190529Fee51fB0B889Df06EF05c6eFCb3A92',
+        l1MessengerWrapper: '0xc862e7a193C107EC6f21Ca241F3e5FB4B50c04f7',
         l2CanonicalBridge: '0x0000000000000000000000000000000000000000',
         l2CanonicalToken: '0xa1EA0B2354F5A344110af2b6AD68e75545009a03',
-        l2Bridge: '0x758A38E5767E046D2Ad3E91603b323cECbD9929a',
-        l2HopBridgeToken: '0x779339AfdcFB5F6310388B56481C5ba011182060',
-        l2AmmWrapper: '0xfe8FAa1532112171Bc978fC104C6257d58bfa071',
-        l2SaddleSwap: '0xEdF52e3888C0D36d14C59B36510f1EcA4C0cE02D',
-        l2SaddleLpToken: '0xCb19E7E39427d8f4182269594d180628b37166a5',
-        bridgeDeployedBlockNumber: 4039293
+        l2Bridge: '0xe81Ec24789E981a845163Df2c9B5F009093E8cac',
+        l2HopBridgeToken: '0xdA5A951E6C63638DBE7f130687c93fBDEF183618',
+        l2AmmWrapper: '0x469eE9608164cdAfD90f74797D169Ed5bD51EA01',
+        l2SaddleSwap: '0x7c96f1d74Fc4D47D0B0063320377a92C5E634432',
+        l2SaddleLpToken: '0x7bbBdf33FD2115863D6eCD3edB92cAbbB8e7BA68',
+        bridgeDeployedBlockNumber: 4453014
       }
     },
     HOP: {
