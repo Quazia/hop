@@ -381,7 +381,7 @@ export const addresses: Addresses = {
       },
       scrollzk: {
         l1CanonicalBridge: '0x0000000000000000000000000000000000000000',
-        l1MessengerWrapper: '0xc862e7a193C107EC6f21Ca241F3e5FB4B50c04f7',
+        l1MessengerWrapper: '0x805065e027ed9ac5a735161484856c7ff0633761',
         l2CanonicalBridge: '0x0000000000000000000000000000000000000000',
         l2CanonicalToken: '0xa1EA0B2354F5A344110af2b6AD68e75545009a03',
         l2Bridge: '0xe81Ec24789E981a845163Df2c9B5F009093E8cac',

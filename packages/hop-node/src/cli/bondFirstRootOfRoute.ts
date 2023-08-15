@@ -1,7 +1,6 @@
 import L1Bridge from 'src/watchers/classes/L1Bridge'
 import MerkleTree from 'src/utils/MerkleTree'
 import getTransferRoot from 'src/theGraph/getTransferRoot'
-import { Chain } from 'src/constants'
 import { actionHandler, parseString, root } from './shared'
 import {
   getBondTransferRootWatcher

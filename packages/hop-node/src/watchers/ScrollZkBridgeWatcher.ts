@@ -68,55 +68,41 @@ class ScrollZkBridgeWatcher extends BaseWatcher {
   }
 
   async relayXDomainMessage (txHash: string): Promise<providers.TransactionResponse> {
-    const l2Bridge = globalConfig.addresses[this.tokenSymbol][Chain.ScrollZk].l2Bridge // '0xe81Ec24789E981a845163Df2c9B5F009093E8cac'
-    const l1MessengerWrapper = '0x805065e027ed9ac5a735161484856c7ff0633761' // '0xc862e7a193C107EC6f21Ca241F3e5FB4B50c04f7'
+    const l2Bridge = globalConfig.addresses[this.tokenSymbol][Chain.ScrollZk].l2Bridge
+    const l1MessengerWrapper = globalConfig.addresses[this.tokenSymbol][Chain.ScrollZk].l1MessengerWrapper
     const value = 0 // Hop messages never have associated value
 
-    const transaction = await this.l2Wallet.provider!.getTransaction(txHash)
-    const nonce = transaction.nonce
-    const message = transaction.data
+    const receipt = await this.l2Wallet.provider!.getTransactionReceipt(txHash)
+    const eventSignature = ethers.utils.id("SentMessage(address,address,uint256,uint256,uint256,bytes)")
+    const log = receipt.logs.find(log => log.topics[0] === eventSignature)
 
+    let messageNonce
+    let message
 
-    // GET PROOF FROM AND BATCH USING ITS INDEX [ASK SCROLL/ISABELLE]
+    if (log) {
+      const iface = new ethers.utils.Interface(['event SentMessage(address indexed sender, address indexed target, uint256 value, uint256 messageNonce, uint256 gasLimit, bytes message)'])
+      const event = iface.parseLog(log)
+      messageNonce = event.args.messageNonce
+      message = event.args.message
+    } else {
+      throw new Error(`could not find SentMessage event logs for ${txHash}`)
+    }
+
+    // GET PROOF FROM BATCH USING ITS INDEX
     // getBatchTransaction(batchIndex)
-    
-    const proof = {"batchIndex":"1","merkleProof":"0x01"}
+    const proof = [
+      '1', // batchIndex
+      '0x01' // merkleProof
+    ]
+    const L2MessageProof = '(uint256,bytes)'
 
     // @scroll-tech/contracts/L1/IL1ScrollMessenger.sol
     const scrollL1MessengerAddress = '0xD185e56B6C04a8a8Af9d21Ed3CbaE5da6f0BC337' // TODO: update away from test contract
-    // @param from The address of the sender of the message.
-    // @param to The address of the recipient of the message.
-    // @param value The msg.value passed to the message call.
-    // @param nonce The nonce of the message to avoid replay attack.
-    // @param message The content of the message.
-    // @param proof The proof used to verify the correctness of the transaction.
-    const abi = [
-      {
-        "inputs": [
-          {"internalType": "address", "name": "from", "type": "address"},
-          {"internalType": "address", "name": "to", "type": "address"},
-          {"internalType": "uint256", "name": "value", "type": "uint256"},
-          {"internalType": "uint256", "name": "nonce", "type": "uint256"},
-          {"internalType": "bytes", "name": "message", "type": "bytes"},
-          {
-            "internalType": "struct ScrollTest.L2MessageProof",
-            "name": "proof",
-            "type": "tuple",
-            "components": [
-              {"internalType": "uint256", "name": "batchIndex", "type": "uint256"},
-              {"internalType": "bytes", "name": "merkleProof", "type": "bytes"}
-            ]
-          }
-        ],
-        "name": "relayMessageWithProof",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }
-    ]
+    const abi = [`function relayMessageWithProof(address,address,uint256,uint256,bytes,${L2MessageProof})`]
     const contract = new ethers.Contract(scrollL1MessengerAddress, abi, this.l1Wallet)
 
-    return await contract.relayMessageWithProof(l2Bridge, l1MessengerWrapper, value, nonce, message, proof)
+    // from, to, value, nonce, message, [batchIndex, merkleProof]
+    return await contract.relayMessageWithProof(l2Bridge, l1MessengerWrapper, value, messageNonce, message, proof)
   }
 }
 

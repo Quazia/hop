@@ -3,13 +3,14 @@ import BaseZkBridgeWatcher from 'src/watchers/BaseZkBridgeWatcher'
 import GnosisBridgeWatcher from 'src/watchers/GnosisBridgeWatcher'
 import OptimismBridgeWatcher from 'src/watchers/OptimismBridgeWatcher'
 import PolygonBridgeWatcher from 'src/watchers/PolygonBridgeWatcher'
+import ScrollZkBridgeWatcher from 'src/watchers/PolygonBridgeWatcher'
 import chainSlugToId from 'src/utils/chainSlugToId'
 import { ConfirmRootsData } from 'src/watchers/ConfirmRootsWatcher'
 import { actionHandler, parseBool, parseString, parseStringArray, root } from './shared'
 import { getConfirmRootsWatcher } from 'src/watchers/watchers'
 
 // Nova and Arbitrum One both use the same Arbitrum Bridge Watcher
-type ExitWatcher = GnosisBridgeWatcher | PolygonBridgeWatcher | OptimismBridgeWatcher | BaseZkBridgeWatcher | ArbitrumBridgeWatcher
+type ExitWatcher = GnosisBridgeWatcher | PolygonBridgeWatcher | OptimismBridgeWatcher | BaseZkBridgeWatcher | ArbitrumBridgeWatcher | ScrollZkBridgeWatcher
 
 root
   .command('confirm-root')
