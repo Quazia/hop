@@ -188,7 +188,8 @@ export default class L1Bridge extends Bridge {
       txOverrides
     ] as const
 
-    const tx = await this.l1BridgeContract.bondTransferRoot(...payload)
+    const bridgeAddress = this.getProxyOrBridgeAddress()
+    const tx = await this.l1BridgeContract.attach(bridgeAddress).bondTransferRoot(...payload)
     return tx
   }
 

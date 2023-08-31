@@ -332,7 +332,8 @@ export default class L2Bridge extends Bridge {
       txOverrides
     ] as const
 
-    const tx = await this.l2BridgeContract.bondWithdrawalAndDistribute(...payload)
+    const bridgeAddress = this.getProxyOrBridgeAddress()
+    const tx = await this.l2BridgeContract.attach(bridgeAddress).bondWithdrawalAndDistribute(...payload)
     return tx
   }
 

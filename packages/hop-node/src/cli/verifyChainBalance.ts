@@ -479,8 +479,8 @@ async function getAllBonderStakes (bridge: Contract, blockTag: providers.BlockTa
   const allBonderAddresses: string[] = getAllBonderAddresses()
   for (const bonderAddress of allBonderAddresses) {
     const [credit, rawDebit] = await Promise.all([
-      bridge.getCredit(bonderAddress, { blockTag }),
-      bridge.getRawDebit(bonderAddress, { blockTag })
+      bridge.getCreditForAddress(bonderAddress, { blockTag }),
+      bridge.getRawDebitForAddress(bonderAddress, { blockTag })
     ])
     const stake = credit.sub(rawDebit)
     totalStake = totalStake.add(stake)

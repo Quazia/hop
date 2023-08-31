@@ -2,14 +2,18 @@ import L1Bridge from 'src/watchers/classes/L1Bridge'
 import L2Bridge from 'src/watchers/classes/L2Bridge'
 import Token from 'src/watchers/classes/Token'
 import chainSlugToId from 'src/utils/chainSlugToId'
+import encodeProxyTransactions from 'src/utils/encodeProxyTransactions'
+import erc20Abi from '@hop-protocol/core/abi/generated/ERC20.json'
 import wait from 'src/utils/wait'
-import { BigNumber, constants } from 'ethers'
+import { BigNumber, Contract, constants } from 'ethers'
 import { CanonicalTokenConvertOptions } from 'src/watchers/classes/Bridge'
 import { Chain } from 'src/constants'
 import { actionHandler, logger, parseBool, parseNumber, parseString, root } from './shared'
+import { Interface } from 'ethers/lib/utils'
 import {
   getBondWithdrawalWatcher
 } from 'src/watchers/watchers'
+import { ProxyTransaction } from 'src/types'
 
 root
   .command('stake')
@@ -32,9 +36,10 @@ async function main (source: any) {
   const bridge: L2Bridge | L1Bridge = await getBridge(token, chain)
   const parsedAmount: BigNumber = bridge.parseUnits(amount)
 
-  const isBonder = await bridge.isBonder()
-  if (!isBonder) {
-    throw new Error('Not a valid bonder on the stake chain')
+
+  const isValidAddress = !!await bridge.isBonder() || !!bridge.getProxyAddress()
+  if (!isValidAddress) {
+    throw new Error('Not a valid bonder or proxy on the stake chain')
   }
 
   const isStakeOnL2 = chain !== Chain.Ethereum
@@ -96,12 +101,47 @@ async function stake (
     )
   }
 
+  // If the bonder is a proxy, send from the EOA to the proxy
   let tx
+  const proxyAddress: string | undefined = bridge.getProxyAddress()
+  if (proxyAddress) {
+    if (token) {
+      tx = await token.transfer(proxyAddress, parsedAmount)
+    } else {
+      tx = await bridge.bridgeContract.signer.sendTransaction({
+        to: proxyAddress,
+        value: parsedAmount
+      })
+    }
+
+    await tx.wait()
+  }
+
+
+  // Approve the tokens if needed
   if (token) {
-    logger.debug('Approving token stake, if needed')
+    logger.debug('Approving token stake')
     const spender = bridge.getAddress()
-    tx = await token.approve(spender, parsedAmount)
-    await tx?.wait()
+    if (proxyAddress) {
+      const ethersInterface = new Interface(erc20Abi)
+      const erc20ApproveData = ethersInterface.encodeFunctionData('approve', [
+        spender,
+        parsedAmount
+      ])
+      const proxyTransaction: ProxyTransaction = {
+        to: token.address,
+        data: erc20ApproveData,
+        value: BigNumber.from(0)
+      }
+      const txData: string[] = encodeProxyTransactions([proxyTransaction])
+
+      const proxyAbi = ['function executeTransactions(bytes[])']
+      const proxyContract = new Contract(proxyAddress, proxyAbi, bridge.bridgeContract.signer)
+      tx = await proxyContract.executeTransactions(txData)
+    } else {
+      tx = await token.approve(spender, parsedAmount)
+    }
+    await tx.wait()
   }
 
   logger.debug(`Attempting to stake ${formattedAmount} tokens`)

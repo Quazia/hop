@@ -285,6 +285,8 @@ export const addresses: Addresses = {
       }
     }
   },
+  proxyAddresses: {
+  },
   rewardsContracts: {
     USDC: {
       arbitrum: ['0xb0CabFE930642AD3E7DECdc741884d8C3F7EbC70'],

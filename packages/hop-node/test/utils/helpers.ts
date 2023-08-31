@@ -996,7 +996,7 @@ export class User {
   async getCredit (network: string = Chain.Ethereum) {
     const bonder = await this.getAddress()
     const bridge = this.getHopBridgeContract(Chain.Ethereum)
-    const credit = (await bridge.getCredit(bonder)).toString()
+    const credit = (await bridge.getCreditForAddress(bonder)).toString()
     return Number(formatUnits(credit, 18))
   }
 

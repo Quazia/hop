@@ -3,7 +3,7 @@ import normalizeEnvVarArray from './utils/normalizeEnvVarArray'
 import normalizeEnvVarNumber from './utils/normalizeEnvVarNumber'
 import os from 'os'
 import path from 'path'
-import { Addresses, Bonders, Bridges } from '@hop-protocol/core/addresses'
+import { Addresses, Bonders, Bridges, ProxyAddresses } from '@hop-protocol/core/addresses'
 import {
   AvgBlockTimeSeconds,
   Chain,
@@ -148,6 +148,7 @@ export type Config = {
   bonderPrivateKey: string
   metadata: Metadata & {[network: string]: any}
   bonders: Bonders
+  proxyAddresses: ProxyAddresses & {[network: string]: any}
   db: DbConfig
   sync: SyncConfigs
   metrics: MetricsConfig
@@ -175,8 +176,8 @@ const normalizeNetwork = (network: string) => {
   return network
 }
 
-const getConfigByNetwork = (network: string): Pick<Config, 'network' | 'addresses' | 'bonders' | 'networks' | 'metadata' | 'isMainnet'> => {
-  const { addresses, bonders, networks, metadata } = isTestMode ? networkConfigs.test : (networkConfigs as any)?.[network]
+const getConfigByNetwork = (network: string): Pick<Config, 'network' | 'addresses' | 'bonders' | 'proxyAddresses' | 'networks' | 'metadata' | 'isMainnet'> => {
+  const { addresses, bonders, proxyAddresses, networks, metadata } = isTestMode ? networkConfigs.test : (networkConfigs as any)?.[network]
   network = normalizeNetwork(network)
   const isMainnet = network === Network.Mainnet
 
@@ -184,6 +185,7 @@ const getConfigByNetwork = (network: string): Pick<Config, 'network' | 'addresse
     network,
     addresses,
     bonders,
+    proxyAddresses,
     networks,
     metadata,
     isMainnet
@@ -191,7 +193,7 @@ const getConfigByNetwork = (network: string): Pick<Config, 'network' | 'addresse
 }
 
 // get default config
-const { addresses, bonders, network, networks, metadata, isMainnet } = getConfigByNetwork(envNetwork)
+const { addresses, bonders, proxyAddresses, network, networks, metadata, isMainnet } = getConfigByNetwork(envNetwork)
 
 // defaults
 export const config: Config = {
@@ -203,6 +205,7 @@ export const config: Config = {
   bonderPrivateKey: bonderPrivateKey ?? '',
   metadata,
   bonders,
+  proxyAddresses,
   fees: {},
   routes: {},
   db: {

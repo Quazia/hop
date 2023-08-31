@@ -102,10 +102,9 @@ class ContractStateWatcher {
         bonderStates[bonder] = {}
       }
 
-      const credit = (await bridge.getCredit(bonder)).toString()
-      const debitAndAdditionalDebit = (await bridge.getDebitAndAdditionalDebit(bonder)).toString()
+      const credit = (await bridge.getCreditForAddress(bonder)).toString()
+      const debitAndAdditionalDebit = (await bridge.getDebitAndAdditionalDebitForAddress(bonder)).toString()
       const isBonder = (await bridge.getIsBonder(bonder)).toString()
-      const rawDebit = (await bridge.getRawDebit(bonder)).toString()
 
       bonderStates[bonder] = {
         credit,

@@ -129,6 +129,14 @@ async function main (source: any) {
     const bonderPublicAddress = computeAddress(privateKey)
     logger.info('Bonder public address:', bonderPublicAddress)
   }
+
+  if (globalConfig.proxyAddresses) {
+    const proxyAddresses: any = globalConfig.proxyAddresses
+    for (const token of tokens) {
+      logger.info(`proxyAddresses for ${token}: ${JSON.stringify(proxyAddresses?.[token])}`)
+    }
+  }
+
   const { starts } = await startWatchers({
     enabledWatchers: Object.keys(config.watchers).filter(
       key => config.watchers[key]

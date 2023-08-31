@@ -67,7 +67,7 @@ async function getTokenAllowance (bridge: L2Bridge | L1Bridge) {
   if (bridge.tokenSymbol === 'ETH') {
     return constants.MaxUint256
   }
-  const spender: string = bridge.getAddress()
+  const spender: string = bridge.getProxyAddress() || bridge.getAddress()
   const token: Token = (await getToken(bridge)) as Token
   return await token.getAllowance(spender)
 }

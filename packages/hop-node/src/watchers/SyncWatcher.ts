@@ -1525,7 +1525,8 @@ class SyncWatcher extends BaseWatcher {
       return
     }
     this.logger.debug(`starting pollGasCost, chainSlug: ${this.chainSlug}`)
-    const bridgeContract = this.bridge.bridgeContract.connect(getRpcProvider(this.chainSlug)!) as L1BridgeContract | L2BridgeContract
+    const bridgeAddress = this.bridge.getProxyOrBridgeAddress()
+    const bridgeContract = this.bridge.bridgeContract.attach(bridgeAddress).connect(getRpcProvider(this.chainSlug)!) as L1BridgeContract | L2BridgeContract
     const amount = BigNumber.from(10)
     const amountOutMin = BigNumber.from(0)
     const bonderFee = BigNumber.from(1)

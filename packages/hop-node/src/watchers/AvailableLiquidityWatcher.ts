@@ -95,7 +95,7 @@ class AvailableLiquidityWatcher extends BaseWatcher {
       throw new Error(`no destination watcher for ${destinationChain}`)
     }
     const destinationBridge = destinationWatcher.bridge
-    let baseAvailableCredit = await destinationBridge.getBaseAvailableCredit(bonder)
+    let baseAvailableCredit = await destinationBridge.getBaseAvailableCreditForAddress(bonder)
     const vaultBalance = await destinationWatcher.getOnchainVaultBalance(bonder)
     this.logger.debug(`on-chain vault balance; bonder: ${bonder}, chain: ${destinationChain}, balance: ${vaultBalance.toString()}`)
     let baseAvailableCreditIncludingVault = baseAvailableCredit.add(vaultBalance)
@@ -181,8 +181,10 @@ class AvailableLiquidityWatcher extends BaseWatcher {
   }
 
   async getBonderAddress (destinationChain: string): Promise<string> {
+    // Route bonders from the config have priority, followed by proxy bonder, followed by bridge bonder
     const routeBonder = getConfigBonderForRoute(this.tokenSymbol, this.chainSlug, destinationChain)
-    return (routeBonder || await this.bridge.getBonderAddress())?.toLowerCase()
+    const proxyAddress = this.bridge.getProxyAddress()
+    return (routeBonder || proxyAddress || await this.bridge.getBonderAddress())?.toLowerCase()
   }
 
   private async updatePendingAmountsMap (destinationChainId: number) {

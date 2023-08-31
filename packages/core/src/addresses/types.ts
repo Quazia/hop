@@ -62,9 +62,15 @@ export type RewardsContracts = {
     [chain: string]: string[]
   }
 }
+export type ProxyAddresses = Partial<{
+  [key in AssetSymbol]: Partial<{
+    [key in ChainSlug]: string
+  }>
+}>
 
 export type Addresses = {
   bridges: Partial<Bridges>
   bonders: Partial<Bonders>
+  proxyAddresses?: Partial<ProxyAddresses>
   rewardsContracts?: RewardsContracts
 }

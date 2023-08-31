@@ -90,34 +90,63 @@ export default class Bridge extends ContractBase {
     return await this.bridgeContract.getIsBonder(bonder)
   }
 
-  getCredit = async (bonder?: string): Promise<BigNumber> => {
-    if (!bonder) {
-      bonder = await this.getBonderAddress()
-    }
-    const credit = await this.bridgeContract.getCredit(bonder)
+  getCredit = async (): Promise<BigNumber> => {
+    const address = await this. getProxyOrBonderAddress()
+    return this._getCredit(address)
+  }
+
+  getCreditForAddress = async (address: string): Promise<BigNumber> => {
+    return this._getCredit(address)
+  }
+
+  private _getCredit = async (address: string): Promise<BigNumber> => {
+    const credit = await this.bridgeContract.getCredit(address)
     return credit
   }
 
-  getDebit = async (bonder?: string): Promise<BigNumber> => {
-    if (!bonder) {
-      bonder = await this.getBonderAddress()
-    }
+  getDebit = async (): Promise<BigNumber> => {
+    const address = await this. getProxyOrBonderAddress()
+    return this._getDebit(address)
+  }
+
+  getDebitForAddress = async (address: string): Promise<BigNumber> => {
+    return this._getDebit(address)
+  }
+
+  private _getDebit = async (address: string): Promise<BigNumber> => {
     const debit = await this.bridgeContract.getDebitAndAdditionalDebit(
-      bonder
+     address 
     )
     return debit
   }
 
   getRawDebit = async (): Promise<BigNumber> => {
-    const bonder = await this.getBonderAddress()
-    const debit = await this.bridgeContract.getRawDebit(bonder)
+    const address = await this. getProxyOrBonderAddress()
+    return this._getRawDebit(address)
+  }
+
+  getRawDebitForAddress = async (address: string): Promise<BigNumber> => {
+    return this._getRawDebit(address)
+  }
+
+  private _getRawDebit = async (address: string): Promise<BigNumber> => {
+    const debit = await this.bridgeContract.getRawDebit(address)
     return debit
   }
 
-  async getBaseAvailableCredit (bonder?: string): Promise<BigNumber> {
+  async getBaseAvailableCredit (): Promise<BigNumber> {
+    const address = await this. getProxyOrBonderAddress()
+    return this._getBaseAvailableCredit(address)
+  }
+
+  async getBaseAvailableCreditForAddress (address: string): Promise<BigNumber> {
+    return this._getBaseAvailableCredit(address)
+  }
+
+  private async _getBaseAvailableCredit (address: string): Promise<BigNumber> {
     const [credit, debit] = await Promise.all([
-      this.getCredit(bonder),
-      this.getDebit(bonder)
+      this._getCredit(address),
+      this._getDebit(address)
     ])
 
     return credit.sub(debit)
@@ -408,7 +437,6 @@ export default class Bridge extends ContractBase {
   }
 
   stake = async (amount: BigNumber): Promise<providers.TransactionResponse> => {
-    const bonder = await this.getBonderAddress()
     const txOverrides = await this.txOverrides()
     if (
       this.chainSlug === Chain.Ethereum &&
@@ -417,8 +445,11 @@ export default class Bridge extends ContractBase {
       txOverrides.value = amount
     }
 
-    const tx = await this.bridgeContract.stake(
-      bonder,
+    // Proxy contract staking is done via the proxy contract
+    const stakeAddress = await this.getProxyOrBonderAddress()
+    const bridgeAddress = this.getProxyOrBridgeAddress()
+    const tx = await this.bridgeContract.attach(bridgeAddress).stake(
+      stakeAddress,
       amount,
       txOverrides
     )
@@ -427,7 +458,9 @@ export default class Bridge extends ContractBase {
   }
 
   unstake = async (amount: BigNumber): Promise<providers.TransactionResponse> => {
-    const tx = await this.bridgeContract.unstake(
+    // Proxy contract unstaking is done via the proxy contract
+    const bridgeAddress = this.getProxyOrBridgeAddress()
+    const tx = await this.bridgeContract.attach(bridgeAddress).unstake(
       amount,
       await this.txOverrides()
     )
@@ -460,7 +493,8 @@ export default class Bridge extends ContractBase {
       txOverrides
     ] as const
 
-    const tx = await this.bridgeContract.bondWithdrawal(...payload)
+    const bridgeAddress = this.getProxyOrBridgeAddress()
+    const tx = await this.bridgeContract.attach(bridgeAddress).bondWithdrawal(...payload)
     return tx
   }
 
@@ -880,4 +914,17 @@ export default class Bridge extends ContractBase {
     const createdAt = Number(transferRootStruct.createdAt?.toString())
     return createdAt > 0
   }
+
+  getProxyAddress (): string | undefined {
+    return globalConfig?.proxyAddresses?.[this.tokenSymbol]?.[this.chainSlug]
+  }
+
+  getProxyOrBridgeAddress (): string {
+    return this.getProxyAddress() ?? this.getAddress()
+  }
+
+  async getProxyOrBonderAddress (): Promise<string> {
+    return this.getProxyAddress() ?? await this.getBonderAddress()
+  }
+
 }
